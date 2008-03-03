@@ -431,7 +431,6 @@ dbi_result_t *dbd_list_tables(dbi_conn_t *conn, const char *db, const char *patt
    */
   dbi_result_t *dbi_result;
   dbi_conn_t* tempconn;
-  dbi_inst instance;
   int retval;
   char* sq_errmsg;
   char* sql_cmd;
@@ -439,8 +438,7 @@ dbi_result_t *dbd_list_tables(dbi_conn_t *conn, const char *db, const char *patt
   /* this function tries to query a specific database, so we need a
    separate connection to that other database, retrieve the table names,
    and feed them to a temporary table in our main connection */
-  instance = dbi_driver_get_instance(dbi_conn_get_driver(conn));
-  tempconn = dbi_conn_new_r("sqlite3", instance);
+  tempconn = dbi_conn_new("sqlite3");
 
   /* we explicitly cast to (char*) as we discard the "const" thing here */
   dbi_conn_set_option(tempconn, "dbname", (char*)db);
@@ -733,7 +731,7 @@ int find_result_field_types(char* field, dbi_conn_t *conn, const char* statement
 				      &errmsg);
 
   if (query_res || !table_numrows) {
-    _dbi_internal_error_handler(conn, NULL, DBI_ERROR_BADNAME);
+    _dbd_internal_error_handler(conn, NULL, DBI_ERROR_BADNAME);
     /*       printf("field not found\n"); */
     return 0;
   }
