@@ -300,10 +300,13 @@ dbi_result_t *dbd_query_null(dbi_conn_t *conn, const char unsigned *statement, s
 	OCIAttrGet(stmt, OCI_HTYPE_STMT, (dvoid *) &stmttype,
 		   (ub4 *) 0, (ub4) OCI_ATTR_STMT_TYPE, Oconn->err);
 	
+	int commit_mode = OCI_COMMIT_ON_SUCCESS;
+	if (!strcmp(dbi_conn_get_option(conn, "auto-commit"), "false"))
+	  commit_mode = OCI_DEFAULT;
 	status = OCIStmtExecute(Oconn->svc, stmt, Oconn->err, 
 		       (ub4) (stmttype == OCI_STMT_SELECT ? 0 : 1), 
 		       (ub4) 0, (CONST OCISnapshot *) NULL, (OCISnapshot *) NULL, 
-		       stmttype == OCI_STMT_SELECT ? MY_OCI_STMT_SCROLLABLE_READONLY : OCI_COMMIT_ON_SUCCESS);
+		       stmttype == OCI_STMT_SELECT ? MY_OCI_STMT_SCROLLABLE_READONLY : commit_mode);
 
 	if( status != OCI_SUCCESS) {
 	  OCIHandleFree(stmt, OCI_HTYPE_STMT);
