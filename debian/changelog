@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-7.syslogng40) syslogng40; urgency=low
+
+  * Release for syslog-ng-pe 4.0
+
+ -- Juhasz Viktor <jviktor@balabit.hu> Tue, 16 Nov 2010 20:10:10 +0100
+
 libdbi-drivers (0.8.2-6.syslogng30) syslogng30; urgency=low
 
   * Allow multiple instances of the FreeTDS backend.
