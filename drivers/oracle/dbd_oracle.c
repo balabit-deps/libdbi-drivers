@@ -92,6 +92,7 @@ int dbd_initialize(dbi_driver_t *driver)
 int dbd_connect(dbi_conn_t *conn) 
 {
 	Oraconn *Oconn = malloc( sizeof( Oraconn ));
+    memset(Oconn, 0, sizeof(Oraconn));
 	
 	const char *username =  dbi_conn_get_option(conn, "username");
 	const char *password =  dbi_conn_get_option(conn, "password");
@@ -104,7 +105,7 @@ int dbd_connect(dbi_conn_t *conn)
 
 	if(OCIEnvCreate ((OCIEnv **) &(Oconn->env), OCI_DEFAULT, (dvoid *)0, 0, 0, 0, (size_t)0, (dvoid **)0)) {
 		_dbd_internal_error_handler(conn, "Connect::Unable to initialize environment", 0);
-		return -2;
+        goto error;
 	}
 
 	/* OCI ERROR HANDLE */
@@ -112,27 +113,38 @@ int dbd_connect(dbi_conn_t *conn)
 			     (size_t) 0, (dvoid **) 0)))
  	{
 		_dbd_internal_error_handler(conn, "Connect::Unable to allocate ERROR handlers.", 0);
-		return -2;
+        goto error;
 	}
  
 	/* OCI SERVICE HANDLE */
 	if( (OCIHandleAlloc( (dvoid *) Oconn->env, (dvoid **) &(Oconn->svc), OCI_HTYPE_SVCCTX,
 			     (size_t) 0, (dvoid **) 0))) {
 		_dbd_internal_error_handler(conn, "Connect::Unable to allocate SERVICE handlers.", 0);
-		return -2;
+        goto error;
 	}
 	if( (status = OCILogon(Oconn->env, Oconn->err, &(Oconn->svc), (CONST OraText*) username, 
 			       strlen(username),(CONST OraText*) password, strlen(password), sid, strlen(sid)))) {
 	  _checkerr(Oconn->err, status);
 	  _dbd_internal_error_handler(conn, "Connect::Unable to login to the database.", 0);
-	  return -2;
+       goto error;
 	}
 
 	conn->connection = (void *)Oconn;
 	if (sid) conn->current_db = strdup(sid); 
   
 	return 0;
+
+error:
+    if (Oconn->err)
+        OCIHandleFree(Oconn->err, OCI_HTYPE_ERROR);
+    if (Oconn->svc)
+        OCIHandleFree(Oconn->svc, OCI_HTYPE_SVCCTX);
+    if (Oconn->env)
+        OCIHandleFree(Oconn->env, OCI_HTYPE_ENV);
+    free(Oconn);
+    return -2;
 }
+
 
 int dbd_disconnect(dbi_conn_t *conn) 
 {
