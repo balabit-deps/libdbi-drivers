@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-8.syslogng40) syslogng40; urgency=low
+
+  * Release for syslog-ng-pe 4.0 + bugfix
+
+ -- Juhasz Viktor <jviktor@balabit.hu> Wen, 15 Dec 2010 16:14:25 +0100
+
 libdbi-drivers (0.8.2-7.syslogng40) syslogng40; urgency=low
 
   * Release for syslog-ng-pe 4.0
