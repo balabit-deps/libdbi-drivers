@@ -83,7 +83,7 @@ int dbd_initialize(dbi_driver_t *driver)
 {
         _dbd_register_driver_cap(driver, "safe_dlclose", 1);
 
-	return OCIInitialize((ub4) OCI_DEFAULT, (dvoid *)0,  
+	return OCIInitialize((ub4) OCI_THREADED, (dvoid *)0,
 			     (dvoid * (*)(dvoid *, size_t)) 0,
 			     (dvoid * (*)(dvoid *, dvoid *, size_t))0,
 			     (void (*)(dvoid *, dvoid *)) 0 );
