@@ -67,9 +67,9 @@ else
                 CFLAGS="-O20 -ffast-math -D_REENTRANT -fsigned-char $CFLAGS"
                 PROFILE="-pg -g -O20 -ffast-math -D_REENTRANT -fsigned-char";;
         sparc-sun-*)
-                DEBUG="-g -Wall -D__NO_MATH_INLINES -fsigned-char -mv8"
-                CFLAGS="-O20 -ffast-math -D__NO_MATH_INLINES -fsigned-char -mv8 $CFLAGS"
-                PROFILE="-pg -g -O20 -D__NO_MATH_INLINES -fsigned-char -mv8" ;;
+                DEBUG="-g -Wall -D__NO_MATH_INLINES -fsigned-char"
+                CFLAGS="-O20 -ffast-math -D__NO_MATH_INLINES -fsigned-char $CFLAGS"
+                PROFILE="-pg -g -O20 -D__NO_MATH_INLINES -fsigned-char" ;;
 	*-*-freebsd*)
                 DEBUG="-g -Wall -D__NO_MATH_INLINES -fsigned-char"
                 CFLAGS="-O20 -D__NO_MATH_INLINES -fsigned-char -I/usr/local/include $CFLAGS"
