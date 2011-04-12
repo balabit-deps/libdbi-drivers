@@ -1,0 +1,4 @@
+libpq
+libpq-dev
+libmysqlclient
+libmysqlclient-dev
