@@ -1,3 +1,12 @@
+libdbi-drivers (0.8.2-8.syslogng41.1) syslogngdeps30; urgency=low
+
+  * re-release for syslog-ng-deps-3.0
+  * removed no-longer supported gcc optimalization flags.
+  * initialize the oracle driver with the Threaded flag.
+  * packaging fixes.
+
+ -- Tamas Pal <folti@balabit.com>  Thu, 14 Apr 2011 19:04:06 +0200
+
 libdbi-drivers (0.8.2-8.syslogng40) syslogng40; urgency=low
 
   * Release for syslog-ng-pe 4.0 + bugfix
