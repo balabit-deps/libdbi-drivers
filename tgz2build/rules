@@ -12,7 +12,9 @@ CONFIGURE_OPTS := --prefix=$(ZBS_PREFIX) --disable-docs --without-oracle --with-
 ifeq (,$(findstring freebsd,$(ZBS_DIST)))
 ifeq (,$(findstring linux-glibc2.1.3,$(ZBS_DIST)))
 ifeq (,$(findstring linux-glibc2.3.2,$(ZBS_DIST)))
+ifeq (,$(findstring osx-10,$(ZBS_DIST)))
 CONFIGURE_OPTS += $(ORACLE_OPTS)
+endif
 endif
 endif
 endif
@@ -42,6 +44,14 @@ endif
 
 ifneq (,$(findstring tru64,$(ZBS_DIST)))
 	RPATH=-Wl,-rpath,/opt/syslog-ng/lib
+endif
+
+ifneq (,$(findstring osx,$(ZBS_DIST)))
+ifneq (,$(findstring ows-10.4,$(ZBS_DIST)))
+  RPATH=-Wl,-rpath,/opt/syslog-ng/lib
+else
+  RPATH=
+endif
 endif
 
 all: binary
