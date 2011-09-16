@@ -1,0 +1,17 @@
+Source: dbd-null
+Section: libs
+Priority: extra
+Maintainer: Gergely Nagy <algernon@balabit.hu>
+Build-Depends: debhelper (>= 7), libdbi0-dev | libdbi-dev, automake, autoconf, libtool, pkg-config
+Standards-Version: 3.8.3
+Homepage: https://github.com/algernon/dbd-null
+
+Package: libdbd-null
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Dummy database driver for libdbi
+ This driver provides a dummy ("null") database backend through the
+ libdbi Database Independent Abstraction Layer.
+ .
+ The driver does not store data, and all it does is do its best to
+ fool programs using it into thinking there's a database behind it.
