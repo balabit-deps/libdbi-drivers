@@ -600,6 +600,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 	size_t slen;
 	unsigned int sizeattrib;
 	dbi_data_t *data;
+  ub4 type;
 	char *ptr, *cols[result->numfields];
 
 	sword status;
@@ -617,18 +618,19 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 		OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
 			   (dvoid*) &length,(ub4 *) 0, (ub4) OCI_ATTR_DATA_SIZE,
 			   (OCIError *) Oconn->err  );
+		OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
+			   (dvoid*) &type,(ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
+			   (OCIError *) Oconn->err  );
+
 		cols[curfield] = (char *)malloc(length+1);
-
-		if (result->field_types[curfield] == DBI_TYPE_DATETIME){
-
-                        OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_DAT, (dvoid *) 0, (ub2 *)0 , (ub2 *)0, OCI_DEFAULT);
-
-                }
-		else {
-			OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield],
-			       (sword) length+1, SQLT_STR, (dvoid *) 0, (ub2 *)0, 
-			       (ub2 *)0, OCI_DEFAULT);
-		}
+		if (result->field_types[curfield] == DBI_TYPE_DATETIME)
+      {
+        OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_DAT, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
+      }
+		else
+      {
+        OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_STR, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
+      }
 
 		if(length < 0 ) _set_field_flag( row, curfield, DBI_VALUE_NULL, 1);
 
