@@ -128,6 +128,82 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 					CS_DATAFMT ** datafmt, CS_INT * datalength,
 					CS_SMALLINT * ind, CS_RETCODE * ret);
 
+typedef struct tdsdatetime
+{
+  int dtdays;
+  int dttime;
+} TDS_DATETIME;
+
+typedef struct tdsdatetime4
+{
+  int days;
+  int minutes;
+} TDS_DATETIME4;
+
+int
+cs_datecrack(int datetype, const void *di, struct tm *tmt)
+{
+
+  const TDS_DATETIME *dt;
+  const TDS_DATETIME4 *dt4;
+
+  int dt_days;
+  unsigned int dt_time;
+
+  int years, months, days, ydays, wday, hours, mins, secs, ms;
+  int l, n, i, j;
+  memset(tmt,0,sizeof(*tmt));
+
+  if (datetype == CS_DATETIME_TYPE) {
+    dt = (const TDS_DATETIME *) di;
+    dt_time = dt->dttime;
+    ms = ((dt_time % 300) * 1000 + 150) / 300;
+    dt_time = dt_time / 300;
+    secs = dt_time % 60;
+    dt_time = dt_time / 60;
+    dt_days = dt->dtdays;
+  } else if (datetype == CS_DATETIME4_TYPE) {
+    dt4 = (const TDS_DATETIME4 *) di;
+    secs = 0;
+    ms = 0;
+    dt_days = dt4->days;
+    dt_time = dt4->minutes;
+  } else
+    return 0;
+
+  /*
+   * -53690 is minimun  (1753-1-1) (Gregorian calendar start in 1732)
+   * 2958463 is maximun (9999-12-31)
+   */
+  l = dt_days + 146038;
+  wday = (l + 4) % 7;
+  n = (4 * l) / 146097; /* n century */
+  l = l - (146097 * n + 3) / 4; /* days from xx00-02-28 (y-m-d) */
+  i = (4000 * (l + 1)) / 1461001; /* years from xx00-02-28 */
+  l = l - (1461 * i) / 4; /* year days from xx00-02-28 */
+  ydays = l >= 306 ? l - 305 : l + 60;
+  l += 31;
+  j = (80 * l) / 2447;
+  days = l - (2447 * j) / 80;
+  l = j / 11;
+  months = j + 1 - 12 * l;
+  years = 100 * (n + 15) + i + l;
+  if (l == 0 && (years & 3) == 0 && (years % 100 != 0 || years % 400 == 0))
+    ++ydays;
+
+  hours = dt_time / 60;
+  mins = dt_time % 60;
+  tmt->tm_year = years - 1900;
+  tmt->tm_mon = months;
+  tmt->tm_mday = days;
+  tmt->tm_yday = ydays;
+  tmt->tm_wday = wday;
+  tmt->tm_hour = hours;
+  tmt->tm_min = mins;
+  tmt->tm_sec = secs;
+  return 1;
+}
+
 void dbd_register_driver(const dbi_info_t ** _driver_info, const char ***_custom_functions,
 			 const char ***_reserved_words)
 {
@@ -936,22 +1012,11 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 	    case CS_DATETIME_TYPE:	/* 8 */
 	    case CS_DATETIME4_TYPE:	/* 4 */
 		{
-		    char datastring[20];
-		    CS_DATAFMT dstfmt;
-
-		    dstfmt.datatype = CS_TEXT_TYPE;
-		    dstfmt.maxlength = 20;
-		    dstfmt.locale = NULL;
-		    dstfmt.format = CS_FMT_NULLTERM;
+        struct tm dr;
 
 		    addr = &(result->rows[result->numrows_matched]->field_values[idx]);
-
-		    if (cs_convert(tdscon->ctx, datafmt[idx], addr, &dstfmt, datastring, NULL) !=
-			CS_SUCCEED) {
-			// fprintf(stderr, "cs_convert() succeeded when failure was expected\n");
-		    }
-		    ((dbi_data_t *) addr)->d_datetime =
-			_dbd_parse_datetime(datastring, DBI_DATETIME_TIME | DBI_DATETIME_DATE);
+        cs_datecrack(datafmt[idx]->datatype, addr, &dr);
+        ((dbi_data_t *) addr)->d_datetime = mktime(&dr);
 		}
 		break;
 		/* decode binary string */
