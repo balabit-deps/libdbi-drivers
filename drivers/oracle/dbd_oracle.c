@@ -524,8 +524,9 @@ void _translate_oracle_type(int fieldtype, ub1 scale, unsigned short *type, unsi
 		break;
 	  
 	case SQLT_DAT:
+  case SQLT_TIMESTAMP:
 		 _type = DBI_TYPE_DATETIME;
-                 break;
+    break;
 	case SQLT_AFC:
 	case SQLT_STR:
 	case SQLT_CHR:
@@ -600,10 +601,14 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 	size_t slen;
 	unsigned int sizeattrib;
 	dbi_data_t *data;
-  ub4 type;
+  ub4 type, rc;
 	char *ptr, *cols[result->numfields];
-
+  ub4 col_types[result->numfields];
+  sb2 year;
+  ub1 mon,day,hour,min,sec;
+  ub4 fsec;
 	sword status;
+  struct tm tmt;
 
 	/* 
 	 * Prefetch all cols as char *'s 
@@ -621,14 +626,53 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 		OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
 			   (dvoid*) &type,(ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
 			   (OCIError *) Oconn->err  );
-
-		cols[curfield] = (char *)malloc(length+1);
 		if (result->field_types[curfield] == DBI_TYPE_DATETIME)
       {
-        OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_DAT, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
+        if (type != SQLT_DAT)
+          {
+            OCIDateTime *stamp;
+            switch (type)
+              {
+                case  SQLT_TIMESTAMP:
+                  {
+                    col_types[curfield] = OCI_DTYPE_TIMESTAMP;
+                    break;
+                  }
+                case SQLT_DATE:
+                  {
+                    col_types[curfield] = OCI_DTYPE_DATE;
+                    break;
+                  }
+                case SQLT_DAT:
+                  {
+                    col_types[curfield] = OCI_DTYPE_DATE;
+                    break;
+                  }
+                case SQLT_TIMESTAMP_TZ:
+                  {
+                    col_types[curfield] = OCI_DTYPE_TIMESTAMP_TZ;
+                    break;
+                  }
+                case SQLT_TIMESTAMP_LTZ:
+                  {
+                    col_types[curfield] = OCI_DTYPE_TIMESTAMP_LTZ;
+                    break;
+                  }
+              }
+            OCIDescriptorAlloc(Oconn->env, (dvoid **)&stamp, col_types[curfield], 0, NULL);
+            OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, &stamp, length+1, (ub2) type, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
+            cols[curfield] = (char *)stamp;
+          }
+        else
+          {
+		        cols[curfield] = (char *)malloc(length+1);
+            OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_DAT, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
+            col_types[curfield] = 0;
+          }
       }
 		else
       {
+		    cols[curfield] = (char *)malloc(length+1);
         OCIDefineByPos(stmt, &defnp, Oconn->err, curfield+1, cols[curfield], (sword) length+1, SQLT_STR, (dvoid *) 0, (ub2 *)0, (ub2 *)0, OCI_DEFAULT);
       }
 
@@ -685,7 +729,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 
 		case DBI_TYPE_STRING:
 			
-			slen = row->field_sizes[curfield];
+      slen = row->field_sizes[curfield];
 			
 			data->d_string = malloc(row->field_sizes[curfield]+1);
 			memcpy(data->d_string, cols[curfield],row->field_sizes[curfield]);
@@ -706,7 +750,31 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 			memcpy(data->d_string, cols[curfield],row->field_sizes[curfield]);
 			break;
 		 case DBI_TYPE_DATETIME:
-			data->d_datetime = _oradate_to_time_t (cols[curfield]);
+      if (col_types[curfield]!=0)
+        {
+          memset(&tmt,0,sizeof(tmt));
+          rc = OCIDateTimeGetDate(Oconn->env, Oconn->err, (OCIDateTime *)cols[curfield], &year, &mon, &day);
+          if (rc == OCI_SUCCESS)
+            {
+              tmt.tm_year = (int )(year - 1900);
+              tmt.tm_mon = (int )(mon - 1);
+              tmt.tm_mday = (int )day;
+            }
+          rc = OCIDateTimeGetTime(Oconn->env, Oconn->err, (OCIDateTime *)cols[curfield], &hour, &min, &sec, &fsec);
+          if (rc == OCI_SUCCESS)
+            {
+              tmt.tm_hour = (int )hour;
+              tmt.tm_min = (int )min;
+              tmt.tm_sec = (int )sec;
+            }
+          data->d_datetime = mktime(&tmt);
+          OCIDescriptorFree(cols[curfield],col_types[curfield]);
+          cols[curfield] = NULL;
+        }
+      else
+        {
+          data->d_datetime = _oradate_to_time_t (cols[curfield]);
+        }
 			break;
 		}
 		if (cols[curfield]) free(cols[curfield]);
@@ -877,9 +945,10 @@ time_t _oradate_to_time_t (char *obuff)
   tmt.tm_min = obuff[5]-1;
   tmt.tm_hour = obuff[4]-1;
   tmt.tm_mday = obuff[3];
-  tmt.tm_mon = obuff[2];
+  tmt.tm_mon = obuff[2]-1;
   tmt.tm_year = (obuff[0]-100)*100 + (obuff[1]-100);
 
+  tmt.tm_year -= 1900;
   loct = mktime(&tmt);
    
   return(loct);
