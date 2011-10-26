@@ -1016,7 +1016,7 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 
 		    addr = &(result->rows[result->numrows_matched]->field_values[idx]);
         cs_datecrack(datafmt[idx]->datatype, addr, &dr);
-        ((dbi_data_t *) addr)->d_datetime = mktime(&dr);
+        ((dbi_data_t *) addr)->d_datetime = _dbd_get_datetime(&dr);
 		}
 		break;
 		/* decode binary string */
