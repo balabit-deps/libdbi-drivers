@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-8.syslogng41.2) syslogngdeps30; urgency=low
+
+  * correct time/date handling in select statement's result
+
+ -- Viktor Juhasz <jviktor@balabit.com>  Wed, 26 Oct 2011 19:04:06 +0200
+
 libdbi-drivers (0.8.2-8.syslogng41.1) syslogngdeps30; urgency=low
 
   * re-release for syslog-ng-deps-3.0
