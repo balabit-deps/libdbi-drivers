@@ -767,7 +767,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
               tmt.tm_min = (int )min;
               tmt.tm_sec = (int )sec;
             }
-          data->d_datetime = mktime(&tmt);
+          data->d_datetime = _dbd_get_datetime(&tmt);
           OCIDescriptorFree(cols[curfield],col_types[curfield]);
           cols[curfield] = NULL;
         }
@@ -949,7 +949,7 @@ time_t _oradate_to_time_t (char *obuff)
   tmt.tm_year = (obuff[0]-100)*100 + (obuff[1]-100);
 
   tmt.tm_year -= 1900;
-  loct = mktime(&tmt);
+  loct = _dbd_get_datetime(&tmt);
    
   return(loct);
 }
