@@ -49,13 +49,7 @@ clean:
 	dh_testroot
 	rm -f build-stamp 
 
-	[ ! -f Makefile ] || $(MAKE) distclean
-	-test -r /usr/share/misc/config.sub && \
-	  cp -f /usr/share/misc/config.sub config.sub
-	-test -r /usr/share/misc/config.guess && \
-	  cp -f /usr/share/misc/config.guess config.guess
-
-	rm -f config.log config.guess config.sub doc/include/Makefile doc/Makefile
+	rm -rf config.log autom4te.cache doc/include/Makefile doc/Makefile
 	dh_clean
 
 install: build

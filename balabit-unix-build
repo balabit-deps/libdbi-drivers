@@ -6,7 +6,10 @@ case "$cmd" in
   get-version)
     head -1 debian/changelog | sed -e 's/.*(\([^)]*\)).*/\1/'
     ;;
-  build-exclude-list|dist-exclude-list|prepare-dist)
+  build-exclude-list|dist-exclude-list)
+      echo "out autom4te.cache"
+    ;;
+  prepare-dist)
     ;;
   bootstrap)
     ./autogen.sh
