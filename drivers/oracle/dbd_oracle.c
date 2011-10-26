@@ -356,8 +356,8 @@ dbi_result_t *dbd_query_null(dbi_conn_t *conn, const char unsigned *statement, s
 		_checkerr(Oconn->err, status);
 		
 		/* cache should be about 20% of all rows. */
-		if(dbi_conn_get_option_numeric(conn, "oracle_prefetch_rows")) {
-			cache_rows = (ub4)numrows/5;
+		cache_rows = dbi_conn_get_option_numeric(conn, "oracle_prefetch_rows");
+    if ((int)cache_rows > 0) {
 			OCIAttrSet(stmt, OCI_HTYPE_STMT,
 				   &cache_rows, sizeof(cache_rows), OCI_ATTR_PREFETCH_ROWS,
 				   Oconn->err);
