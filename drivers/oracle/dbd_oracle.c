@@ -58,6 +58,12 @@ static const dbi_info_t driver_info = {
 	__DATE__
 };
 
+typedef struct _result_data
+{
+  OCIParam **params;
+  ub2 *types;
+} result_data;
+
 static const char *custom_functions[] = {NULL}; 
 static const char *reserved_words[] = ORACLE_RESERVED_WORDS;
 
@@ -181,6 +187,14 @@ int dbd_fetch_row(dbi_result_t *result, unsigned long long rowidx)
 
 int dbd_free_query(dbi_result_t *result) 
 {
+  if (result->driver_data)
+    {
+      result_data *resinfo = result->driver_data;
+      free(resinfo->params);
+      free(resinfo->types);
+      free(resinfo);
+      result->driver_data = NULL;
+    }
 	if (result->result_handle) OCIHandleFree((dvoid *)result->result_handle, OCI_HTYPE_STMT);
 	result->result_handle = NULL;
 	return 0;
@@ -287,13 +301,14 @@ dbi_result_t *dbd_query_null(dbi_conn_t *conn, const char unsigned *statement, s
 	Oraconn *Oconn = conn->connection;
 	sword status;
 	ub4 cache_rows = 0;
+  result_data *resinfo = NULL;
 	char *notused;
 
 	unsigned int idx = 0;
         unsigned short fieldtype;
         unsigned int fieldattribs;
         OCIParam *param;
-        ub4 otype;
+        ub2 otype;
         text *col_name;
         sb1  scale;
         ub4  col_name_len;
@@ -368,16 +383,23 @@ dbi_result_t *dbd_query_null(dbi_conn_t *conn, const char unsigned *statement, s
 
 	result = _dbd_result_create(conn, (void *)stmt, numrows , affectedrows);
 	_dbd_result_set_numfields(result, numfields);
+  resinfo = malloc(sizeof(result_data));
+  resinfo->params = malloc(sizeof(OCIParam *) * numfields);
+  resinfo->types = malloc(sizeof(ub2) * numfields);
+  result->driver_data = resinfo;
 
 	while (idx < result->numfields) {
                 scale = 0;
 
-                OCIParamGet(stmt, OCI_HTYPE_STMT, Oconn->err, (dvoid **)&param,
+                OCIParamGet(stmt, OCI_HTYPE_STMT, Oconn->err,(dvoid **)&param,
                             (ub4) idx+1);
+                resinfo->params[idx] = param;
 
                 OCIAttrGet(param, (ub4) OCI_DTYPE_PARAM,
-                           &otype,(ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
+                           &otype, (ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
                            (OCIError *) Oconn->err  );
+                resinfo->types[idx] = otype;
+                fprintf(stderr,"PARAM TYPE: %d\n",resinfo->types[idx]);
 
                 OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
                            (dvoid**) &col_name,(ub4 *) &col_name_len, (ub4) OCI_ATTR_NAME,
@@ -601,7 +623,8 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 	size_t slen;
 	unsigned int sizeattrib;
 	dbi_data_t *data;
-  ub4 type, rc;
+  ub4 rc;
+  ub2 type;
 	char *ptr, *cols[result->numfields];
   ub4 col_types[result->numfields];
   sb2 year;
@@ -609,6 +632,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
   ub4 fsec;
 	sword status;
   struct tm tmt;
+  result_data *resinfo = result->driver_data;
 
 	/* 
 	 * Prefetch all cols as char *'s 
@@ -617,15 +641,11 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 	 */
 	while(curfield < result->numfields) {
 		length = 0;
-		OCIParamGet(stmt, OCI_HTYPE_STMT, Oconn->err, (dvoid **)&param,
-			    (ub4) curfield+1);
-	
-		OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
+
+		OCIAttrGet((dvoid*) resinfo->params[curfield], (ub4) OCI_DTYPE_PARAM,
 			   (dvoid*) &length,(ub4 *) 0, (ub4) OCI_ATTR_DATA_SIZE,
 			   (OCIError *) Oconn->err  );
-		OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
-			   (dvoid*) &type,(ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
-			   (OCIError *) Oconn->err  );
+    type = resinfo->types[curfield];
 		if (result->field_types[curfield] == DBI_TYPE_DATETIME)
       {
         if (type != SQLT_DAT)
