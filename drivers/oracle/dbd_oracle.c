@@ -547,6 +547,9 @@ void _translate_oracle_type(int fieldtype, ub1 scale, unsigned short *type, unsi
 	  
 	case SQLT_DAT:
   case SQLT_TIMESTAMP:
+  case SQLT_DATE:
+  case SQLT_TIMESTAMP_TZ:
+  case SQLT_TIMESTAMP_LTZ:
 		 _type = DBI_TYPE_DATETIME;
     break;
 	case SQLT_AFC:
