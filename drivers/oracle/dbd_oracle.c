@@ -399,7 +399,6 @@ dbi_result_t *dbd_query_null(dbi_conn_t *conn, const char unsigned *statement, s
                            &otype, (ub4 *) 0, (ub4) OCI_ATTR_DATA_TYPE,
                            (OCIError *) Oconn->err  );
                 resinfo->types[idx] = otype;
-                fprintf(stderr,"PARAM TYPE: %d\n",resinfo->types[idx]);
 
                 OCIAttrGet((dvoid*) param, (ub4) OCI_DTYPE_PARAM,
                            (dvoid**) &col_name,(ub4 *) &col_name_len, (ub4) OCI_ATTR_NAME,
@@ -614,7 +613,6 @@ void _get_field_info(dbi_result_t *result)
 	}
 }
 
-
 void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowidx) 
 {
 	OCIStmt *stmt = result->result_handle;
@@ -622,7 +620,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 	OCIParam *param;
 	Oraconn *Oconn = result->conn->connection; 
 	unsigned int curfield = 0;
-	size_t length = 0;
+	ub2 length = 0;
 	size_t slen;
 	unsigned int sizeattrib;
 	dbi_data_t *data;
