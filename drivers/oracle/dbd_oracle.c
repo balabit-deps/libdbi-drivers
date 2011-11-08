@@ -74,7 +74,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 unsigned long long _oracle_query_to_longlong(dbi_conn_t *conn, const char *sql_cmd);
 void _checkerr(OCIError * errhp, sword status);
 static size_t oracle_escape_string(char *to, const char *from, size_t length);
-time_t _oradate_to_time_t (char *obuff);
+void _oradate_to_stime (char *obuff, struct tm *stm);
 
 
 void dbd_register_driver(const dbi_info_t **_driver_info, const char ***_custom_functions, 
@@ -632,7 +632,7 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
   ub1 mon,day,hour,min,sec;
   ub4 fsec;
 	sword status;
-  struct tm tmt;
+  struct tm *tmt;
   result_data *resinfo = result->driver_data;
 
 	/* 
@@ -773,28 +773,28 @@ void _get_row_data(dbi_result_t *result, dbi_row_t *row, unsigned long long rowi
 		 case DBI_TYPE_DATETIME:
       if (col_types[curfield]!=0)
         {
-          memset(&tmt,0,sizeof(tmt));
+          tmt=&(data->d_stime);
+          memset(tmt,0,sizeof(struct tm));
           rc = OCIDateTimeGetDate(Oconn->env, Oconn->err, (OCIDateTime *)cols[curfield], &year, &mon, &day);
           if (rc == OCI_SUCCESS)
             {
-              tmt.tm_year = (int )(year - 1900);
-              tmt.tm_mon = (int )(mon - 1);
-              tmt.tm_mday = (int )day;
+              tmt->tm_year = (int )(year - 1900);
+              tmt->tm_mon = (int )(mon - 1);
+              tmt->tm_mday = (int )day;
             }
           rc = OCIDateTimeGetTime(Oconn->env, Oconn->err, (OCIDateTime *)cols[curfield], &hour, &min, &sec, &fsec);
           if (rc == OCI_SUCCESS)
             {
-              tmt.tm_hour = (int )hour;
-              tmt.tm_min = (int )min;
-              tmt.tm_sec = (int )sec;
+              tmt->tm_hour = (int )hour;
+              tmt->tm_min = (int )min;
+              tmt->tm_sec = (int )sec;
             }
-          data->d_datetime = _dbd_get_datetime(&tmt);
           OCIDescriptorFree(cols[curfield],col_types[curfield]);
           cols[curfield] = NULL;
         }
       else
         {
-          data->d_datetime = _oradate_to_time_t (cols[curfield]);
+          _oradate_to_stime (cols[curfield], &(data->d_stime));
         }
 			break;
 		}
@@ -943,9 +943,9 @@ static size_t oracle_escape_string(char *to, const char *from, size_t length)
 
 
 
-time_t _oradate_to_time_t (char *obuff)
+void _oradate_to_stime (char *obuff, struct tm *stm)
 {
-  struct  tm tmt;
+  struct  tm *tmt=stm;
 /*  char    stime[101], *cp = NULL; */
   time_t  loct = 0L;
 
@@ -961,16 +961,13 @@ time_t _oradate_to_time_t (char *obuff)
 
 /*    cp = strptime(stime, "%Y%m%d%H%M%S", &tmt); */
 
-  memset(&tmt, 0, sizeof(tmt));
-  tmt.tm_sec = obuff[6]-1;
-  tmt.tm_min = obuff[5]-1;
-  tmt.tm_hour = obuff[4]-1;
-  tmt.tm_mday = obuff[3];
-  tmt.tm_mon = obuff[2]-1;
-  tmt.tm_year = (obuff[0]-100)*100 + (obuff[1]-100);
+  memset(tmt, 0, sizeof(struct tm));
+  tmt->tm_sec = obuff[6]-1;
+  tmt->tm_min = obuff[5]-1;
+  tmt->tm_hour = obuff[4]-1;
+  tmt->tm_mday = obuff[3];
+  tmt->tm_mon = obuff[2]-1;
+  tmt->tm_year = (obuff[0]-100)*100 + (obuff[1]-100);
 
-  tmt.tm_year -= 1900;
-  loct = _dbd_get_datetime(&tmt);
-   
-  return(loct);
+  tmt->tm_year -= 1900;
 }

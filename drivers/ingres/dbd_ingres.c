@@ -463,7 +463,7 @@ size_t dbd_quote_binary(dbi_conn_t *conn, const unsigned char* orig,
 
 /* ---------- result handling ---------- */
 
-static time_t ingres_date(char *raw){
+static time_t ingres_date(char *raw, struct tm *stm){
 	struct tm unixtime;
 	char *p = raw, *q, sep;
 
@@ -539,6 +539,9 @@ static time_t ingres_date(char *raw){
 			//	++p;
 		}else if(*p)
 			_verbose_handler(NULL,"bad time: '%s'",p);
+
+		if (stm!=NULL)
+			memcpy(stm,&unixtime,sizeof(struct tm));
 
 		return timegm(&unixtime);
 	}else
@@ -638,7 +641,7 @@ static int ingres_field(dbi_result_t *result, dbi_row_t *row, dbi_data_t *data,
 		len = convParm.cv_dstValue.dv_length;
 		if(pdesc->ds_dataType == IIAPI_DTE_TYPE){
 			val[len] = 0;
-			data->d_datetime = ingres_date(val);
+			ingres_date(val,&(data->d_stime));
 			PRINT_DEBUG(result->conn,"  [%d] date string %d bytes\n", idx,len);
 			break;
 		}else if(pdesc->ds_dataType == IIAPI_DEC_TYPE || pdesc->ds_dataType == IIAPI_MNY_TYPE){

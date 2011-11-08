@@ -152,7 +152,7 @@ cs_datecrack(int datetype, const void *di, struct tm *tmt)
 
   int years, months, days, ydays, wday, hours, mins, secs, ms;
   int l, n, i, j;
-  memset(tmt,0,sizeof(*tmt));
+  memset(tmt,0,sizeof(struct tm));
 
   if (datetype == CS_DATETIME_TYPE) {
     dt = (const TDS_DATETIME *) di;
@@ -1012,11 +1012,10 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 	    case CS_DATETIME_TYPE:	/* 8 */
 	    case CS_DATETIME4_TYPE:	/* 4 */
 		{
-        struct tm dr;
-
+                    struct tm dr;
 		    addr = &(result->rows[result->numrows_matched]->field_values[idx]);
-        cs_datecrack(datafmt[idx]->datatype, addr, &dr);
-        ((dbi_data_t *) addr)->d_datetime = _dbd_get_datetime(&dr);
+                    cs_datecrack(datafmt[idx]->datatype, addr, &dr);
+                    memcpy(&(((dbi_data_t *) addr)->d_stime), &dr, sizeof(struct tm));
 		}
 		break;
 		/* decode binary string */
