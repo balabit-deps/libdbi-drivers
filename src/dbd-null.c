@@ -23,6 +23,7 @@
 #include <dbi/dbd.h>
 
 #include <string.h>
+#include <unistd.h>
 
 static const dbi_info_t driver_info = {
         "null",
@@ -35,6 +36,16 @@ static const dbi_info_t driver_info = {
 
 static const char *custom_functions[] = { NULL };
 static const char *reserved_words[] = { NULL };
+
+static inline void
+_dbd_null_sleep (const dbi_conn_t *conn, const char *opt_name)
+{
+  int n;
+
+  n = dbi_conn_get_option_numeric (conn, opt_name);
+  if (n > 0)
+    sleep (n);
+}
 
 void
 dbd_register_driver (const dbi_info_t **_driver_info, const char ***_custom_functions,
@@ -55,12 +66,14 @@ dbd_initialize (dbi_driver_t *driver)
 int
 dbd_connect (dbi_conn_t *conn)
 {
+  _dbd_null_sleep (conn, "null.sleep.connect");
   return 0;
 }
 
 int
 dbd_disconnect (dbi_conn_t *conn)
 {
+  _dbd_null_sleep (conn, "null.sleep.disconnect");
   return 0;
 }
 
@@ -117,12 +130,14 @@ dbd_get_engine_version (dbi_conn_t *conn, char *versionstring)
 dbi_result_t *
 dbd_list_dbs (dbi_conn_t *conn, const char *pattern)
 {
+  _dbd_null_sleep (conn, "null.sleep.list_dbs");
   return NULL;
 }
 
 dbi_result_t *
 dbd_list_tables (dbi_conn_t *conn, const char *db, const char *pattern)
 {
+  _dbd_null_sleep (conn, "null.sleep.list_tables");
   return NULL;
 }
 
@@ -159,19 +174,22 @@ dbd_query (dbi_conn_t *conn, const char *statement)
 
   res = _dbd_result_create (conn, NULL, 0, 0);
   _dbd_result_set_numfields (res, 0);
-  
+
+  _dbd_null_sleep (conn, "null.sleep.query");
   return res;
 }
 
 dbi_result_t *
 dbd_query_null (dbi_conn_t *conn, const unsigned char *statement, size_t st_length)
 {
+  _dbd_null_sleep (conn, "null.sleep.query_null");
   return NULL;
 }
 
 const char *
 dbd_select_db (dbi_conn_t *conn, const char *db)
 {
+  _dbd_null_sleep (conn, "null.sleep.select_db");
   return db;
 }
 
@@ -199,5 +217,6 @@ dbd_get_seq_next (dbi_conn_t *conn, const char *sequence)
 int
 dbd_ping (dbi_conn_t *conn)
 {
+  _dbd_null_sleep (conn, "null.sleep.ping");
   return 1;
 }
