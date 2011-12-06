@@ -1,3 +1,10 @@
+dbd-null (2-1) unstable; urgency=low
+
+  * New upstream release.
+    + Includes a reasonable test suite.
+
+ -- Gergely Nagy <algernon@balabit.hu>  Wed, 07 Dec 2011 00:31:55 +0100
+
 dbd-null (1-1) unstable; urgency=low
 
   * New upstream release.
