@@ -2,8 +2,9 @@ dbd-null (1-1) unstable; urgency=low
 
   * New upstream release.
     + Supports sleeping during various operations, see the README.md.
+  * Do not install static and libtool libraries.
 
- -- Gergely Nagy <algernon@balabit.hu>  Tue, 06 Dec 2011 17:47:03 +0100
+ -- Gergely Nagy <algernon@balabit.hu>  Tue, 06 Dec 2011 17:55:16 +0100
 
 dbd-null (0-1) unstable; urgency=low
 

@@ -4,5 +4,9 @@ override_dh_auto_configure:
 	autoreconf -i
 	dh_auto_configure
 
+override_dh_auto_install:
+	dh_auto_install
+	rm -f debian/libdbd-null/usr/lib/dbd/libdbdnull*a
+
 %:
 	dh  $@
