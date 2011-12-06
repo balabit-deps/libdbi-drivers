@@ -41,7 +41,7 @@ static const char *custom_functions[] = { NULL };
 static const char *reserved_words[] = { NULL };
 
 static inline void
-_dbd_null_sleep (const dbi_conn_t *conn, const char *opt_name)
+_dbd_null_sleep (dbi_conn_t *conn, const char *opt_name)
 {
   int n;
 
