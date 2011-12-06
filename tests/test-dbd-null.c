@@ -3,6 +3,8 @@
 #include <string.h>
 #include <dbi/dbi.h>
 
+#include "config.h"
+
 int
 main (int argc, char *argv[])
 {
@@ -11,6 +13,7 @@ main (int argc, char *argv[])
   int r;
   const char *cs;
   char *str1, *str2;
+  char version[64];
   unsigned long long seq, n;
 
   if (argc < 2)
@@ -22,6 +25,9 @@ main (int argc, char *argv[])
   dbi_initialize (argv[1]);
 
   conn = dbi_conn_new ("null");
+
+  dbi_conn_get_engine_version_string (conn, version);
+  assert (strcmp (version, VERSION) == 0);
 
   /*
    * Connection stuff

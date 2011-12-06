@@ -26,12 +26,14 @@
 #include <string.h>
 #include <unistd.h>
 
+#include "config.h"
+
 static const dbi_info_t driver_info = {
         "null",
         "dummy database driver",
         "Gergely Nagy <algernon@balabit.hu>",
         "none",
-        "dbd_null v0",
+        "dbd_null v" VERSION,
         __DATE__
 };
 
@@ -124,7 +126,7 @@ dbd_encoding_from_iana (const char *iana_encoding)
 char *
 dbd_get_engine_version (dbi_conn_t *conn, char *versionstring)
 {
-  strncpy (versionstring, "0", VERSIONSTRING_LENGTH + 1);
+  strncpy (versionstring, VERSION, VERSIONSTRING_LENGTH + 1);
   return versionstring;
 }
 
