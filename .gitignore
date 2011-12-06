@@ -24,3 +24,4 @@ stamp-*
 /debian/*substvars
 /debian/*debhelper.log
 .libs/
+/tests/test-dbd-null
