@@ -4,6 +4,7 @@
 *.o
 *.la
 *.lo
+core
 Makefile
 /config.h
 /config.guess
@@ -25,3 +26,4 @@ stamp-*
 /debian/*debhelper.log
 .libs/
 /tests/test-dbd-null
+/tests/test-dbd-null-sleep
