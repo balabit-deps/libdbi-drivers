@@ -1,3 +1,11 @@
+libdbi-drivers (0.8.2-8.syslogng41.3) syslogngdeps40; urgency=low
+
+  * Multiple Oracle specific fixes.
+  * moved to syslog-ng-deps-4.0
+  * bumped version to .syslogng41.3
+
+ -- Tamas Pal <folti@balabit.com>  Tue, 06 Dec 2011 12:08:11 +0100
+
 libdbi-drivers (0.8.2-8.syslogng41.2) syslogngdeps30; urgency=low
 
   * correct time/date handling in select statement's result
