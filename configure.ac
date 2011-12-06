@@ -71,4 +71,5 @@ AC_CHECK_DBI
 AC_OUTPUT([
 	Makefile
 	src/Makefile
+        tests/Makefile
 	])
