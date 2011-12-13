@@ -238,6 +238,7 @@ AC_OUTPUT([
 	drivers/firebird/Makefile
 	drivers/freetds/Makefile
 	drivers/ingres/Makefile
+        drivers/null/Makefile
 	tests/Makefile
 	m4/Makefile
 	])
