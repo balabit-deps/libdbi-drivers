@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 AC_INIT(src/dbd-null.c)
 
-AM_INIT_AUTOMAKE(libdbd-null, 2)
+AM_INIT_AUTOMAKE(libdbd-null, 3)
 AM_CONFIG_HEADER(config.h)
 
 AC_CANONICAL_HOST

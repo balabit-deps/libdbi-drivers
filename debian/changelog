@@ -1,3 +1,10 @@
+dbd-null (3-1) unstable; urgency=low
+
+  * New upstream release.
+    + Supports returning an error on COMMIT.
+
+ -- Gergely Nagy <algernon@balabit.hu>  Tue, 13 Dec 2011 11:40:34 +0100
+
 dbd-null (2-1) unstable; urgency=low
 
   * New upstream release.
