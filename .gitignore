@@ -27,3 +27,4 @@ stamp-*
 .libs/
 /tests/test-dbd-null
 /tests/test-dbd-null-sleep
+.deps/
