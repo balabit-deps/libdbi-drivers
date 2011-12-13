@@ -27,4 +27,5 @@ stamp-*
 .libs/
 /tests/test-dbd-null
 /tests/test-dbd-null-sleep
+/tests/test-dbd-null-error
 .deps/

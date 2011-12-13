@@ -175,10 +175,15 @@ dbd_query (dbi_conn_t *conn, const char *statement)
 {
   dbi_result_t *res;
 
+  _dbd_null_sleep (conn, "null.sleep.query");
+
+ if (strcasecmp (statement, "COMMIT") == 0 &&
+      dbi_conn_get_option_numeric (conn, "null.error.commit") != 0)
+    return NULL;
+
   res = _dbd_result_create (conn, NULL, 0, 0);
   _dbd_result_set_numfields (res, 0);
 
-  _dbd_null_sleep (conn, "null.sleep.query");
   return res;
 }
 

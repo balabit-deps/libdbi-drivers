@@ -22,5 +22,11 @@ happen) when performing the appropriate function:
 * null.sleep.select_db
 * null.sleep.ping
 
+The driver also accepts the following other options:
+
+* null.error.commit: When set to a non-zero value, and the driver
+  receives a query starting with *COMMIT*, the query will fail instead
+  of returning an empty result.
+
  [1]: http://libdbi.sourceforge.net/
  [2]: http://www.balabit.com/network-security/syslog-ng
