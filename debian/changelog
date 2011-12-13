@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-8.syslogng41.4) syslogngdeps40; urgency=low
+
+  * merged Algernon's null driver.
+  * bumped version to 0.8.2-8.syslogng41.4
+
+ -- Tamas Pal <folti@balabit.com>  Tue, 13 Dec 2011 13:18:38 +0100
+
 libdbi-drivers (0.8.2-8.syslogng41.3) syslogngdeps40; urgency=low
 
   * Multiple Oracle specific fixes.

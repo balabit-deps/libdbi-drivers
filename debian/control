@@ -61,3 +61,10 @@ Description: Oracle database server driver for libdbi
  libdbi Database Independent Abstraction Layer. Switching a program's driver
  does not require recompilation or rewriting source code.
 
+Package: libdbd-null
+Section: libs
+Architecture: any
+Depends: libdbi0 (>= 0.8.2), oracle-instantclient-lite (>=10.2.0.3), ${shlibs:Depends}
+Description: null driver for libdbi
+ null driver, to test libdbi itself.
+
