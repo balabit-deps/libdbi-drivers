@@ -89,10 +89,7 @@ int dbd_initialize(dbi_driver_t *driver)
 {
         _dbd_register_driver_cap(driver, "safe_dlclose", 1);
 
-	return OCIInitialize((ub4) OCI_THREADED, (dvoid *)0,
-			     (dvoid * (*)(dvoid *, size_t)) 0,
-			     (dvoid * (*)(dvoid *, dvoid *, size_t))0,
-			     (void (*)(dvoid *, dvoid *)) 0 );
+        return 0;
 }
 
 int dbd_connect(dbi_conn_t *conn) 
@@ -109,7 +106,7 @@ int dbd_connect(dbi_conn_t *conn)
 
 	/* OCI Environment Allocation */
 
-	if(OCIEnvCreate ((OCIEnv **) &(Oconn->env), OCI_DEFAULT, (dvoid *)0, 0, 0, 0, (size_t)0, (dvoid **)0)) {
+	if(OCIEnvCreate ((OCIEnv **) &(Oconn->env), OCI_THREADED, (dvoid *)0, 0, 0, 0, (size_t)0, (dvoid **)0)) {
 		_dbd_internal_error_handler(conn, "Connect::Unable to initialize environment", 0);
         goto error;
 	}
