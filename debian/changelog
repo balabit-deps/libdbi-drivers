@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-8.syslogng50.1) syslogngdeps50; urgency=low
+
+  * dbd_oracle: Enable threaded mode properly
+  * bumped version to 0.8.2-8.syslogng42.1
+
+ -- Marton Arvai <amarci@balabit.com>  Fri, 3 Aug 2012 11:36:38 +0200
+
 libdbi-drivers (0.8.2-8.syslogng42.1) syslogngdeps40; urgency=low
 
   * dbd_oracle: Enable threaded mode properly
