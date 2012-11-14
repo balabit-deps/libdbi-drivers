@@ -1,3 +1,11 @@
+libdbi-drivers (0.8.2-9.syslogng42.1) syslogngdeps40; urgency=low
+
+  * dbd_oracle: added ignore_tns_config for enable/disable to use tnsnames.ora
+    config file
+  * bumped version to 0.8.2-9.syslogng42.1
+
+ -- Balazs Benedek <bbalazs@balabit.com>  Wen, 14 Nov 2012 17:11:16 +0100
+
 libdbi-drivers (0.8.2-8.syslogng42.1) syslogngdeps40; urgency=low
 
   * dbd_oracle: Enable threaded mode properly
