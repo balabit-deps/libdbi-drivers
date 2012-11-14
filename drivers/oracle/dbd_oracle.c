@@ -97,12 +97,25 @@ int dbd_connect(dbi_conn_t *conn)
 	Oraconn *Oconn = malloc( sizeof( Oraconn ));
     memset(Oconn, 0, sizeof(Oraconn));
 	
-	const char *username =  dbi_conn_get_option(conn, "username");
-	const char *password =  dbi_conn_get_option(conn, "password");
-	const char *sid      =  dbi_conn_get_option(conn, "dbname");
+	const char *username  =  dbi_conn_get_option(conn, "username");
+	const char *password  =  dbi_conn_get_option(conn, "password");
+	const char *sid       =  dbi_conn_get_option(conn, "dbname");
+	int ignore_tns_config =  dbi_conn_get_option_numeric(conn, "oracle_ignore_tns_config");
 	sword status;
 
-	if(! sid ) sid = getenv("ORACLE_SID");
+	if (!sid)
+		sid = getenv("ORACLE_SID");
+
+	if (ignore_tns_config)
+	{
+		const char *host     =  dbi_conn_get_option(conn, "host");
+		const char *dbname   =  dbi_conn_get_option(conn, "dbname");
+		const char *port     =  dbi_conn_get_option(conn, "port");
+
+		if (!strlen(port))
+			port = "1521";
+		asprintf(&sid, "%s:%s/%s", host, port, dbname);
+	}
 
 	/* OCI Environment Allocation */
 
@@ -133,7 +146,16 @@ int dbd_connect(dbi_conn_t *conn)
 	}
 
 	conn->connection = (void *)Oconn;
-	if (sid) conn->current_db = strdup(sid); 
+	if (sid)
+	{
+		if (conn->current_db)
+			free(conn->current_db);
+
+		conn->current_db = strdup(sid);
+	}
+
+	if (ignore_tns_config)
+		free(sid);
   
 	return 0;
 
@@ -144,6 +166,8 @@ error:
         OCIHandleFree(Oconn->svc, OCI_HTYPE_SVCCTX);
     if (Oconn->env)
         OCIHandleFree(Oconn->env, OCI_HTYPE_ENV);
+    if (ignore_tns_config)
+        free(sid);
     free(Oconn);
     return -2;
 }
