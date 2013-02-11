@@ -92,11 +92,8 @@ int dbd_initialize(dbi_driver_t *driver)
         return 0;
 }
 
-int dbd_connect(dbi_conn_t *conn) 
+static sword connect_to_db(dbi_conn_t *conn, Oraconn *Oconn)
 {
-	Oraconn *Oconn = malloc( sizeof( Oraconn ));
-    memset(Oconn, 0, sizeof(Oraconn));
-	
 	const char *username  =  dbi_conn_get_option(conn, "username");
 	const char *password  =  dbi_conn_get_option(conn, "password");
 	const char *sid       =  dbi_conn_get_option(conn, "dbname");
@@ -115,13 +112,6 @@ int dbd_connect(dbi_conn_t *conn)
 		if (!strlen(port))
 			port = "1521";
 		asprintf(&sid, "%s:%s/%s", host, port, dbname);
-	}
-
-	/* OCI Environment Allocation */
-
-	if(OCIEnvCreate ((OCIEnv **) &(Oconn->env), OCI_THREADED, (dvoid *)0, 0, 0, 0, (size_t)0, (dvoid **)0)) {
-		_dbd_internal_error_handler(conn, "Connect::Unable to initialize environment", 0);
-        goto error;
 	}
 
 	/* OCI ERROR HANDLE */
@@ -172,6 +162,82 @@ error:
     return -2;
 }
 
+static sword create_default_oracle_env(OCIEnv **env)
+{
+	return OCIEnvCreate(env,
+		OCI_THREADED,
+		(dvoid *)0,
+		0,
+		0,
+		0,
+		(size_t)0,
+		(dvoid **)0);
+}
+
+static sword create_nls_oracle_env(OCIEnv **env, dbi_conn_t *conn)
+{
+	const char *sql_get_nchar_cmd = "select nls_charset_id('NCHAR_CS') from dual";
+	const char *sql_get_char_cmd =  "select nls_charset_id('CHAR_CS') from dual";
+	Oraconn *Oconn = calloc(1, sizeof(Oraconn));
+
+	if (create_default_oracle_env(&(Oconn->env)) != 0)
+		return -1;
+
+	if (connect_to_db(conn, Oconn) != 0)
+		return -1;
+
+	long ncharset_id =  _oracle_query_to_longlong(conn, sql_get_nchar_cmd);
+	long charset_id  =  _oracle_query_to_longlong(conn, sql_get_char_cmd);
+
+	dbd_disconnect(conn);
+	if (Oconn->env)
+		OCIHandleFree(Oconn->env, OCI_HTYPE_ENV);
+
+	return OCIEnvNlsCreate(env,
+			(ub4)OCI_THREADED,
+			(void *)0,
+			(void *(*) ()) 0,
+			(void *(*) ()) 0,
+			(void(*) ()) 0,
+			(size_t) 0,
+			(void **)0,
+			(ub2)charset_id,
+			(ub2)ncharset_id);
+}
+
+int dbd_connect(dbi_conn_t *conn)
+{
+	const char *auto_charset_option = dbi_conn_get_option(conn, "oracle_auto_charset");
+	int auto_charset = 0;
+	sword status;
+	Oraconn *Oconn = malloc(sizeof(Oraconn));
+	memset(Oconn, 0, sizeof(Oraconn));
+
+	if (auto_charset_option)
+	{
+		auto_charset = (strcmp(auto_charset_option, "true") == 0);
+		free(auto_charset_option);
+        }
+
+	/* OCI Environment Allocation */
+	if (auto_charset)
+		status = create_nls_oracle_env(&(Oconn->env), conn);
+	else
+		status = create_default_oracle_env(&(Oconn->env));
+
+	if (status)
+	{
+		_dbd_internal_error_handler(conn, "Connect::Unable to initialize environment", 0);
+		/* who knows what memory area is pointed by Oconn->env...? */
+		Oconn->env = NULL;
+		/*free Oconn->env?*/
+		return -2;
+	}
+
+	/* connect to db */
+	status = connect_to_db(conn, Oconn);
+	return status;
+}
 
 int dbd_disconnect(dbi_conn_t *conn) 
 {
