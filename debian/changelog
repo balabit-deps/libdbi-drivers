@@ -1,3 +1,11 @@
+libdbi-drivers (0.8.2-9.syslogng42.2) syslogngdeps40; urgency=low
+
+  * dbd_oracle: it is possible to get charset,ncharset from the database itself with
+    the auto-charset option(these charsets will be used by the connection)
+  * bumped version to 0.8.2-9.syslogng42.2
+
+ -- Laszlo Budai <lbudai@balabit.com>  Tue, 12 Feb 2013 11:08:16 +0100
+
 libdbi-drivers (0.8.2-9.syslogng42.1) syslogngdeps40; urgency=low
 
   * dbd_oracle: added ignore_tns_config for enable/disable to use tnsnames.ora
