@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-9.syslogng42.3) syslogngdeps40; urgency=low
+
+  * dbd_oracle: memory problem fixed
+  * bumped version to 0.8.2-9.syslogng42.3
+
+ -- Laszlo Budai <lbudai@balabit.com>  Tue, 13 Feb 2013 15:02:16 +0100
+
 libdbi-drivers (0.8.2-9.syslogng42.2) syslogngdeps40; urgency=low
 
   * dbd_oracle: it is possible to get charset,ncharset from the database itself with
