@@ -216,7 +216,6 @@ int dbd_connect(dbi_conn_t *conn)
 	if (auto_charset_option)
 	{
 		auto_charset = (strcmp(auto_charset_option, "true") == 0);
-		free(auto_charset_option);
         }
 
 	/* OCI Environment Allocation */
