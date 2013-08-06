@@ -60,3 +60,9 @@ dbd_oracle/*: dbd_oracle.sgml
 maintainer-clean: clean
 	rm -f dbd_oracle.pdf dbd_oracle/*
 
+install-data-local:
+	$(mkinstalldirs) ${DESTDIR}${prefix}/lib/network/admin
+	echo "BEQUEATH_DETACH=YES" > $(DESTDIR)${prefix}/lib/network/admin/sqlnet.ora
+	echo "DIAG_ADR_ENABLED=FALSE" >> $(DESTDIR)${prefix}/lib/network/admin/sqlnet.ora
+	echo "DIAG_DDE_ENABLED=FALSE" >> $(DESTDIR)${prefix}/lib/network/admin/sqlnet.ora
+	echo "DIAG_SIGHANDLER_ENABLED=FALSE" >> $(DESTDIR)${prefix}/lib/network/admin/sqlnet.ora
