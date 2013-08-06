@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-9.syslogng50.2) syslogngdeps50; urgency=low
+
+  * dbd_oracle: turn off signal handler and oci diag tool
+  * bumped version to 0.8.2-9.syslogng50.2
+
+ -- Viktor Juhasz <jviktor@balabit.com>  Tue, 6 Aug 2013 12:25:16 +0100
+
 libdbi-drivers (0.8.2-9.syslogng42.3) syslogngdeps40; urgency=low
 
   * dbd_oracle: memory problem fixed
