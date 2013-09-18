@@ -1,3 +1,11 @@
+libdbi-drivers (0.8.2-9.syslogng50.3) syslogngdeps50; urgency=low
+
+  * configure: port --enable-mysql-threadsafe from upstream 1/2
+  * tgz2build/rules: link against the thread-safe libmysqlclient_r
+  * bumped version to 0.8.2-9.syslogng50.3
+
+ -- Attila M. Magyar <athos@balabit.com>  Wed, 18 Sep 2013 09:25:57 +0200
+
 libdbi-drivers (0.8.2-9.syslogng50.2) syslogngdeps50; urgency=low
 
   * dbd_oracle: turn off signal handler and oci diag tool
