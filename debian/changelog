@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-9.syslogng50.4) syslogngdeps50; urgency=low
+
+  * dbd_mysql: thread safe initialization
+  * bumped version to 0.8.2-9.syslogng50.4
+
+ -- Laszlo Budai <lbudai@balabit.hu>  Tue, 08 Oct 2013 14:04:47 +0200
+
 libdbi-drivers (0.8.2-9.syslogng50.3) syslogngdeps50; urgency=low
 
   * configure: port --enable-mysql-threadsafe from upstream 1/2
