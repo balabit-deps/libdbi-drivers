@@ -127,6 +127,8 @@ int dbd_initialize(dbi_driver_t *driver) {
 	 * return -1 on error, 0 on success. if -1 is returned, the driver will not
 	 * be added to the list of available drivers. */
         _dbd_register_driver_cap(driver, "safe_dlclose", 1);
+        if (mysql_library_init(0, NULL, NULL))
+                return -1;
 	return 0;
 }
 
@@ -158,7 +160,6 @@ int dbd_connect(dbi_conn_t *conn) {
 	client_flags |= (dbi_conn_get_option_numeric(conn, "mysql_client_multi_results") > 0) ? CLIENT_MULTI_RESULTS : 0;
 	client_flags |= (dbi_conn_get_option_numeric(conn, "mysql_client_no_schema") > 0) ? CLIENT_NO_SCHEMA : 0;
 	client_flags |= (dbi_conn_get_option_numeric(conn, "mysql_client_odbc") > 0) ? CLIENT_ODBC : 0;
-	
 	mycon = mysql_init(NULL);
 	if (!mycon) {
 		_dbd_internal_error_handler(conn, NULL, DBI_ERROR_NOMEM);
