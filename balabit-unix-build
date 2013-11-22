@@ -1,5 +1,7 @@
 #!/bin/sh -e
 
+fips=${ENABLE_FIPS:-false}
+
 cmd=$1
 shift
 case "$cmd" in
@@ -16,11 +18,17 @@ case "$cmd" in
 
     ;;
   configure)
-    ./configure --disable-docs --without-oracle \
-        --with-dbi --with-dbi-incdir='${prefix}/include/' --with-dbi-libdir='${prefix}/lib/' \
-        --with-freetds --with-mysql --with-pgsql \
-        --with-sqlite3 --without-sqlite \
-        $@
+        if $fips; then
+            ./configure --disable-docs --without-oracle \
+                --with-dbi --with-dbi-incdir='${prefix}/include/' --with-dbi-libdir='${prefix}/lib/' \
+                --without-freetds --without-mysql --without-pgsql \
+                --without-sqlite3 --without-sqlite $1
+        else
+            ./configure --disable-docs --without-oracle \
+                --with-dbi --with-dbi-incdir='${prefix}/include/' --with-dbi-libdir='${prefix}/lib/' \
+                --with-freetds --with-mysql --with-pgsql \
+                --with-sqlite3 --without-sqlite $@
+        fi
     ;;
   make)
     make $@
