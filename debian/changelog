@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-9.syslogng50.5) syslogngdeps50; urgency=low
+
+  * enable FIPS-mode building
+  * bumped version to 0.8.2-9.syslogng50.5
+
+ -- Daniel Gados <gdani@balabit.hu>  Tue, 14 Jan 2014 11:04:55 +0100
+
 libdbi-drivers (0.8.2-9.syslogng50.4) syslogngdeps50; urgency=low
 
   * dbd_mysql: thread safe initialization
