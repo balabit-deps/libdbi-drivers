@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng51.1) syslogngdeps51; urgency=low
+
+  * bumped version to 0.8.2-9.syslogng51.1
+
+ -- Laszlo Budai <lbudai@balabit.hu>  Mon, 03 Mar 2014 14:57:19 +0100
+
 libdbi-drivers (0.8.2-9.syslogng50.5) syslogngdeps50; urgency=low
 
   * enable FIPS-mode building
