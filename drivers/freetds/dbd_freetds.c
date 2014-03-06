@@ -356,14 +356,12 @@ int dbd_connect(dbi_conn_t * conn)
     }
 
     /* Connect to CLI */
-    ret = ct_connect(tdscon->conn,
-		     (str = (char *) dbi_conn_get_option(conn, "host")) ? str : "", CS_NULLTERM);
-    if (ret != CS_SUCCEED) {
-	// fprintf(stderr, "ct_connect() failed!\n");
-	return -1;
-    }
-
-    return 0;
+    ret = ct_connect(tdscon->conn, (str = (char *) dbi_conn_get_option(conn, "host")) ? str : "", CS_NULLTERM);
+    if (ret != CS_SUCCEED)
+      {
+	      return -1;
+      }
+    return dbd_select_db(conn, dbi_conn_get_option(conn, "dbname")) ? 0 : -1;
 }
 
 int dbd_disconnect(dbi_conn_t * conn)
