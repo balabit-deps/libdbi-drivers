@@ -369,10 +369,15 @@ int dbd_connect(dbi_conn_t * conn)
 int dbd_disconnect(dbi_conn_t * conn)
 {
     FREETDSCON *tdscon = (FREETDSCON *) conn->connection;
+    if (tdscon == NULL)
+      {
+        return 0;
+      }
 
-    if (ct_cancel(tdscon->conn, NULL, CS_CANCEL_ALL) != CS_SUCCEED) {
-	return 1;
-    }
+    if (ct_cancel(tdscon->conn, NULL, CS_CANCEL_ALL) != CS_SUCCEED)
+      {
+        return 1;
+      }
 
     ct_cmd_drop(tdscon->cmd);
     ct_close(tdscon->conn, CS_UNUSED);
