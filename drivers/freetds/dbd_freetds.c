@@ -870,6 +870,10 @@ void _translate_freetds_type(CS_DATAFMT * datafmt, unsigned short *type, unsigne
 
     switch (datafmt->datatype /* field type */ ) {
 
+    case CS_BIGINT_TYPE:       /* 8 */
+        _type = DBI_TYPE_INTEGER;
+        _attribs |= DBI_INTEGER_SIZE8;
+        break;
     case CS_LONG_TYPE:		/* 8 */
 	_type = DBI_TYPE_INTEGER;
 	_attribs |= DBI_INTEGER_SIZE8;
