@@ -117,6 +117,9 @@ static const char freetds_encoding_hash[][16] = {
     "iso646", "US-ASCII",	/*  94 */
     "", ""
 };
+static const int ct_diag_clientmsg_limit = 0;
+static const int ct_diag_servermsg_limit = 100;
+
 void _dbd_free_row(dbi_result_t * result, dbi_row_t * row);
 
 void _translate_freetds_type(CS_DATAFMT * datafmt, unsigned short *type, unsigned int *attribs);
@@ -254,6 +257,24 @@ int dbd_connect(dbi_conn_t * conn)
     return -1;
   success_allocate:
     conn->connection = tdscon;
+
+    /* Initialize ct_diag() for get catching error messages */
+    ret = ct_diag(tdscon->conn, CS_INIT, CS_UNUSED, CS_UNUSED, NULL);
+    if (ret != CS_SUCCEED) {
+        return -1;
+    }
+
+    /* Set limit of client messages */
+    ret = ct_diag(tdscon->conn, CS_MSGLIMIT, CS_CLIENTMSG_TYPE, CS_UNUSED, (CS_VOID *) &ct_diag_clientmsg_limit);
+    if (ret != CS_SUCCEED) {
+        return -1;
+    }
+
+    /* Set limit of server messages */
+    ret = ct_diag(tdscon->conn, CS_MSGLIMIT, CS_SERVERMSG_TYPE, CS_UNUSED, (CS_VOID *) &ct_diag_servermsg_limit);
+    if (ret != CS_SUCCEED) {
+        return -1;
+    }
 
     /* Set parameters for login */
     /* USERNAME */
@@ -823,8 +844,38 @@ int dbd_geterror(dbi_conn_t * conn, int *errno, char **errstr)
     /* put error number into errno, error string into errstr
      * return 0 if error, 1 if errno filled, 2 if errstr filled, 3 if both errno and errstr filled */
 
-    /* We havn't functions for read error types in freetds */
-    return -1;
+    FREETDSCON *tdscon = (FREETDSCON *) conn->connection;
+    CS_RETCODE ret;
+    CS_INT count = 0;
+    CS_INT idx;
+    CS_SERVERMSG message;
+    char *result = NULL;
+
+    ret = ct_diag(tdscon->conn, CS_STATUS, CS_SERVERMSG_TYPE, CS_UNUSED, (CS_VOID *) &count);
+    if (ret != CS_SUCCEED || count < 1) {
+        return -1;
+    }
+
+    for (idx = 1; idx <= count; ++idx) {
+        ret = ct_diag(tdscon->conn, CS_GET, CS_SERVERMSG_TYPE, idx, (CS_VOID *) &message);
+        if (ret != CS_SUCCEED) {
+            return -1;
+        }
+        if (result == NULL)
+            result = strdup(message.text);
+        else
+            asprintf(&result, "%s; %s", result, message.text);
+    }
+
+    ret = ct_diag(tdscon->conn, CS_CLEAR, CS_SERVERMSG_TYPE, CS_UNUSED, NULL);
+    if (ret != CS_SUCCEED) {
+        return -1;
+    }
+
+    // It will return with a message list with all errors and message number of the last error
+    *errno = message.msgnumber;
+    *errstr = result;
+    return 3;
 }
 
 unsigned long long dbd_get_seq_last(dbi_conn_t * conn, const char *sequence)
