@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng52.3) syslogng52; urgency=medium
+
+  * some bugs are forward ported
+
+ -- jviktor <jviktor@balabit.com>  Thu, 09 Oct 2014 13:57:17 +0200
+
 libdbi-drivers (0.8.2-9.syslogng52.2) syslogng52; urgency=low
 
   * some bugs are forward ported
