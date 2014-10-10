@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng52.4) syslogng52; urgency=medium
+
+  * NULL deref corrected
+
+ -- jviktor <jviktor@balabit.com>  Fri, 10 Oct 2014 12:36:23 +0200
+
 libdbi-drivers (0.8.2-9.syslogng52.3) syslogng52; urgency=medium
 
   * some bugs are forward ported
