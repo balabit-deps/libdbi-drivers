@@ -34,3 +34,5 @@ stamp-h
 stamp-h.in
 typescript
 ylwrap
+b
+*.pyc

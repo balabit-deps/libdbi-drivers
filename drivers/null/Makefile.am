@@ -8,5 +8,5 @@ INCLUDES		= @DBI_INCLUDE@
 
 libdir			= ${driverdir}
 lib_LTLIBRARIES		= ${null_ltlibs}
-libdbdnull_la_LDFLAGS	= ${null_ldflags} -ldbi
+libdbdnull_la_LDFLAGS	= ${null_ldflags} @LIBADD_LIBDBI@
 libdbdnull_la_SOURCES	= ${null_sources}
