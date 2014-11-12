@@ -34,5 +34,5 @@ stamp-h
 stamp-h.in
 typescript
 ylwrap
-b
-*.pyc
+sbuild/build
+sbuild.py
