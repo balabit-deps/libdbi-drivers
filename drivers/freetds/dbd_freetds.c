@@ -1056,7 +1056,10 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 		    dstfmt.format = CS_FMT_UNUSED;
 
 		    addr = malloc(sizeof(CS_NUMERIC_TYPE));
-        *((char *)addr) = '\0';
+		    if (addr)
+		      {
+                        *((char *)addr) = '\0';
+                      }
 		    char **orig =
 			&(result->rows[result->numrows_matched]->field_values[idx].d_string);
 
@@ -1114,7 +1117,10 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 	     * 1 extra byte for \0
 	     */
 	    addr = row->field_values[idx].d_string = (char *) malloc(row->field_sizes[idx] + 1);
-      *((char *)addr) = '\0';
+	    if (addr)
+	      {
+                *((char *)addr) = '\0';
+              }
 	    break;
 	default:
 	    /* Prepare union to data copy */
