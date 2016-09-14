@@ -34,5 +34,7 @@ stamp-h
 stamp-h.in
 typescript
 ylwrap
-sbuild/build
+sbuild/*
+!sbuild/config.yml
 sbuild.py
+test-driver
