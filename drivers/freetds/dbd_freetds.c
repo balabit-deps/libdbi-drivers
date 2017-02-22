@@ -830,7 +830,7 @@ const char *dbd_select_db(dbi_conn_t * conn, const char *db)
     dbi_result_t *res;
     char *sql_cmd;
 
-    asprintf(&sql_cmd, "USE %s ", db);
+    asprintf(&sql_cmd, "USE [%s] ", db);
     res = dbd_query(conn, sql_cmd);
     free(sql_cmd);
 
