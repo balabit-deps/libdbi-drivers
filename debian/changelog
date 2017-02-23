@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng60.1) syslogng60; urgency=low
+
+  * Fixed MSSQL escaping
+
+ -- laszlovarady <laszlo.varady@balabit.com> Thu, 23 Feb 2017 13:18:06 +0100
+
 libdbi-drivers (0.8.2-9.syslogng54.1) syslogng54; urgency=low
 
   * re-released because of oracle-12 support
