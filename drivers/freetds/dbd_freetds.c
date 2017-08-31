@@ -230,6 +230,7 @@ int dbd_connect(dbi_conn_t * conn)
 {
     FREETDSCON *tdscon;
     CS_RETCODE ret;
+    CS_INT     textsize;
 
     char *str;
     unsigned int num;
@@ -361,6 +362,9 @@ int dbd_connect(dbi_conn_t * conn)
       {
 	      return -1;
       }
+    if ((textsize = dbi_conn_get_option_numeric(conn, "textsize"))>0)
+       ct_options(tdscon->conn, CS_SET, CS_OPT_TEXTSIZE, &textsize, sizeof(CS_INT), NULL);
+
     return dbd_select_db(conn, dbi_conn_get_option(conn, "dbname")) ? 0 : -1;
 }
 
