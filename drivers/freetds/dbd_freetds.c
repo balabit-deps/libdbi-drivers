@@ -974,10 +974,13 @@ void _translate_freetds_type(CS_DATAFMT * datafmt, unsigned short *type, unsigne
 	datafmt->format = CS_FMT_NULLTERM;
 	++datafmt->maxlength; /* 1 extra byte for \0 */
 	break;
-    case CS_MONEY_TYPE:	/* 8 */
-    case CS_MONEY4_TYPE:	/* 4 */
     case CS_NUMERIC_TYPE:
     case CS_DECIMAL_TYPE:
+    _type = DBI_TYPE_DECIMAL;
+	_attribs |= DBI_DECIMAL_SIZE8;
+    break;
+    case CS_MONEY_TYPE:	/* 8 */
+    case CS_MONEY4_TYPE:	/* 4 */
     case CS_UNIQUE_TYPE:
     case CS_IMAGE_TYPE:
     case CS_BINARY_TYPE:
@@ -1049,6 +1052,35 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 	     * because we should know CS_ data types.
 	     */
 	    switch (datafmt[idx]->datatype) {
+        case CS_NUMERIC_TYPE:
+        case CS_DECIMAL_TYPE:
+        {
+            CS_DATAFMT dstfmt;
+
+            dstfmt.datatype = CS_CHAR_TYPE;
+            dstfmt.maxlength = 32;
+            dstfmt.locale = NULL;
+            dstfmt.precision = datafmt[idx]->precision;
+            dstfmt.scale = datafmt[idx]->scale;
+            dstfmt.format = CS_FMT_UNUSED;
+
+            addr = malloc(dstfmt.maxlength);
+            if (addr) {
+                *((char *)addr) = '\0';
+            }
+
+            char *orig_value = &(result->rows[result->numrows_matched]->field_values[idx].d_string);
+            CS_INT* orig_size = &(result->rows[result->numrows_matched]->field_sizes[idx]);
+
+            // if ret_code == CS_SUCCED
+            cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size);
+            datafmt[idx]->maxlength = dstfmt.maxlength;
+            result->field_types[idx] = DBI_TYPE_NUMERIC_AS_STRING;
+
+            free(orig_value);
+            result->rows[result->numrows_matched]->field_values[idx].d_string = addr;
+            break;
+        }
 	    case CS_MONEY_TYPE:	/* 8 */
 	    case CS_MONEY4_TYPE:	/* 4 */
 		{
@@ -1126,6 +1158,9 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
                 *((char *)addr) = '\0';
               }
 	    break;
+    case DBI_TYPE_NUMERIC_AS_STRING:
+        datafmt[idx]->datatype = CS_CHAR_TYPE;
+    break;
 	default:
 	    /* Prepare union to data copy */
 	    bzero((addr = &row->field_values[idx]), sizeof(dbi_data_t));
