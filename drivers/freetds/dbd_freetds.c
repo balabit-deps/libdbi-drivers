@@ -1076,8 +1076,8 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size);
             datafmt[idx]->maxlength = dstfmt.maxlength;
             result->field_types[idx] = DBI_TYPE_NUMERIC_AS_STRING;
+            ((char *)addr)[*orig_size] = '\0';
 
-            free(orig_value);
             result->rows[result->numrows_matched]->field_values[idx].d_string = addr;
             break;
         }
@@ -1158,9 +1158,6 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
                 *((char *)addr) = '\0';
               }
 	    break;
-    case DBI_TYPE_NUMERIC_AS_STRING:
-        datafmt[idx]->datatype = CS_CHAR_TYPE;
-    break;
 	default:
 	    /* Prepare union to data copy */
 	    bzero((addr = &row->field_values[idx]), sizeof(dbi_data_t));
