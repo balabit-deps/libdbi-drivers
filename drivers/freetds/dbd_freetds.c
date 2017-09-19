@@ -1072,8 +1072,11 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             char *orig_value = &(result->rows[result->numrows_matched]->field_values[idx].d_string);
             CS_INT* orig_size = &(result->rows[result->numrows_matched]->field_sizes[idx]);
 
-            // if ret_code == CS_SUCCED
-            cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size);
+            if (cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size) != CS_SUCCED) {
+                free(addr);
+                return NULL;
+            }
+
             datafmt[idx]->maxlength = dstfmt.maxlength;
             result->field_types[idx] = DBI_TYPE_NUMERIC_AS_STRING;
             ((char *)addr)[*orig_size] = '\0';
