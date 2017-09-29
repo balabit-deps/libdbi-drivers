@@ -1072,7 +1072,7 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             char *orig_value = &(result->rows[result->numrows_matched]->field_values[idx].d_string);
             CS_INT* orig_size = &(result->rows[result->numrows_matched]->field_sizes[idx]);
 
-            if (cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size) != CS_SUCCED) {
+            if (cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size) != CS_SUCCEED) {
                 free(addr);
                 return NULL;
             }
