@@ -68,3 +68,30 @@ Depends: libdbi0 (>= 0.8.2), oracle-instantclient-lite (>=10.2.0.3), ${shlibs:De
 Description: null driver for libdbi
  null driver, to test libdbi itself.
 
+Package: libdbd-sqlite-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-sqlite3-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-mysql-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-pgsql-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-freetds-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-oracle-dbg
+Architecture: any
+Description: -
+
+Package: libdbd-null-dbg
+Architecture: any
+Description: -
