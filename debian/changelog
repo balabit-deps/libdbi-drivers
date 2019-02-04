@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng60.4) syslogng60; urgency=low
+
+  * Add debug binaries
+
+ -- Laszlo Varady <laszlo.varady@balabit.com>  Mon, 04 Feb 2019 10:55:08 +0100
+
 libdbi-drivers (0.8.2-9.syslogng60.3) syslogng60; urgency=low
 
  -- kokan <peter.kokai@balabit.com> Fri, 10 Nov 2017 12:04:09 +0100
@@ -175,7 +181,7 @@ libdbi-drivers (0.8.2-4.syslogng30) syslogng30; urgency=low
 
 libdbi-drivers (0.8.2-3.syslogng30) syslogng30; urgency=low
 
-  * Fixed AIX packaging again. 
+  * Fixed AIX packaging again.
   * On AIX don't put .so files to .a files.
 
  -- Tamas Pal <folti@balabit.com>  Tue, 07 Oct 2008 16:12:51 +0200
