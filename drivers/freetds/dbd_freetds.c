@@ -306,16 +306,30 @@ int dbd_connect(dbi_conn_t * conn)
     }
 
     if ((str = (char *) dbi_conn_get_option(conn, "freetds_version"))) {
-    	/* Last VERSION supported by ctlib is 7.0 */
 	// Format = X.XX.XX
 	switch (str[0]) {
-//      We can use it if "CS_TDS_80" will be add to ct_con_props() by CS_SET action
-	case '8':
-	    num = CS_TDS_80;
-	    break;
 	case '7':
-	    num = CS_TDS_70;
-	    break;
+		{
+		switch (str[2]) {
+		case '1':
+		    num = CS_TDS_71;
+		    break;
+		case '2':
+		    num = CS_TDS_72;
+		    break;
+		case '3':
+		    num = CS_TDS_73;
+		    break;
+		case '4':
+		    num = CS_TDS_74;
+		    break;
+		case '0':
+		default:
+		    num = CS_TDS_70;
+		    break;
+		}
+		}
+		break;
 	case '5':
 	    num = CS_TDS_50;
 	    break;
