@@ -296,16 +296,15 @@ int dbd_connect(dbi_conn_t * conn)
 	return -1;
     }
 
-    /* CHARSET or locale? */
     /* Describe all locales and charsets in locales.conf file */
-/*    ret = ct_con_props(tdscon->conn, CS_SET, CS_LOC_PROP,
-		       (str = (char *) dbi_conn_get_encoding(conn)) ? str : "",
+    ret = ct_con_props(tdscon->conn, CS_SET, CS_CLIENTCHARSET,
+		       (str = (char *) dbi_conn_get_option(conn, "encoding")) ? str : "",
 		       CS_NULLTERM, NULL);
     if (ret != CS_SUCCEED) {
-	// fprintf(stderr, "ct_con_props() SET LOCALE failed!\n");
+	// fprintf(stderr, "ct_con_props() SET CLIENT CHARSET failed!\n");
 	return -1;
     }
-*/
+
     if ((str = (char *) dbi_conn_get_option(conn, "freetds_version"))) {
     	/* Last VERSION supported by ctlib is 7.0 */
 	// Format = X.XX.XX
