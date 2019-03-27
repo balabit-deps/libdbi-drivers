@@ -1132,7 +1132,7 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
                     memcpy(&(((dbi_data_t *) addr)->d_stime), &dr, sizeof(struct tm));
 		}
 		break;
-		/* decode binary string */
+
 	    case CS_UNIQUE_TYPE:
 	    case CS_IMAGE_TYPE:
 	    case CS_BINARY_TYPE:
@@ -1140,11 +1140,6 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 	    case CS_UNICHAR_TYPE:
 
 		addr = result->rows[result->numrows_matched];
-
-
-		((dbi_row_t *) addr)->field_sizes[idx] =
-		    _dbd_decode_binary(((dbi_row_t *) addr)->field_values[idx].d_string,
-				       ((dbi_row_t *) addr)->field_values[idx].d_string);
 		break;
 	    case CS_CHAR_TYPE:
 	    case CS_TEXT_TYPE:
@@ -1162,6 +1157,10 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
 
 	switch (result->field_types[idx]) {
 	case DBI_TYPE_BINARY:
+        addr = row->field_values[idx].d_string = (char *) malloc(row->field_sizes[idx] + 1);
+        if (addr)
+            bzero(addr, row->field_sizes[idx] + 1);
+        break;
 	case DBI_TYPE_STRING:
 	    /* 
 	     * Result is more that 8 bytes - 
