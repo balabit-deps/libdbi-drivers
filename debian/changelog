@@ -1,3 +1,9 @@
+libdbi-drivers (0.8.2-9.syslogng60.6) syslogng60; urgency=low
+
+  * freetds: fix buffer overflow
+
+ -- Gabor Nagy <gabor.nagy@balabit.com>  Wed, 27 Mar 2019 16:23:51 +0100
+
 libdbi-drivers (0.8.2-9.syslogng70.1) syslogng70; urgency=low
 
   * version: bumped to 0.8.2-9.syslogng70.1
