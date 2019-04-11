@@ -1071,7 +1071,7 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             CS_DATAFMT dstfmt;
 
             dstfmt.datatype = CS_CHAR_TYPE;
-            dstfmt.maxlength = 32;
+            dstfmt.maxlength = 64;
             dstfmt.locale = NULL;
             dstfmt.precision = datafmt[idx]->precision;
             dstfmt.scale = datafmt[idx]->scale;
