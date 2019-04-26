@@ -1071,18 +1071,23 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             CS_DATAFMT dstfmt;
 
             dstfmt.datatype = CS_CHAR_TYPE;
-            dstfmt.maxlength = 32;
+            dstfmt.maxlength = 64;
             dstfmt.locale = NULL;
             dstfmt.precision = datafmt[idx]->precision;
             dstfmt.scale = datafmt[idx]->scale;
             dstfmt.format = CS_FMT_UNUSED;
 
-            addr = malloc(dstfmt.maxlength);
+            addr = malloc(dstfmt.maxlength * sizeof(char));
             if (addr) {
                 *((char *)addr) = '\0';
             }
 
-            char *orig_value = &(result->rows[result->numrows_matched]->field_values[idx].d_string);
+            /*
+             * Actually stored in a CS_DECIMAL struct, which conveniently has enough space in dbi_data_t union.
+             * Accessing it through d_string is just a workaround, as it is stored in an union with no
+             * appropriate variable name.
+             */
+            void *orig_value = &(result->rows[result->numrows_matched]->field_values[idx].d_string);
             CS_INT* orig_size = &(result->rows[result->numrows_matched]->field_sizes[idx]);
 
             if (cs_convert(tdscon->ctx, datafmt[idx], orig_value, &dstfmt, addr, orig_size) != CS_SUCCEED) {
@@ -1091,7 +1096,7 @@ dbi_row_t *_dbd_freetds_buffers_binding(dbi_conn_t * conn, dbi_result_t * result
             }
 
             datafmt[idx]->maxlength = dstfmt.maxlength;
-            result->field_types[idx] = DBI_TYPE_NUMERIC_AS_STRING;
+            result->field_types[idx] = DBI_TYPE_STRING;
             ((char *)addr)[*orig_size] = '\0';
 
             result->rows[result->numrows_matched]->field_values[idx].d_string = addr;
