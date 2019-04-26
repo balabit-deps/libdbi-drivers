@@ -1,3 +1,10 @@
+libdbi-drivers (0.8.2-9.syslogng60.7) syslogng60; urgency=low
+
+  * freetds: fix buffer overflow in case of CS_CHAR_TYPE
+  * freetds: fix memleak in decimal->string conversion
+
+ -- Gabor Nagy <gabor.nagy@balabit.com>  Fri, 26 Apr 2019 11:22:35 +0200
+
 libdbi-drivers (0.8.2-9.syslogng70.2) syslogng70; urgency=low
 
   * version: bumped to 0.8.2-9.syslogng70.2
