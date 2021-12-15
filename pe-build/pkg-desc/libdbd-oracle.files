@@ -1,0 +1,3 @@
+opt/syslog-ng/lib/dbd/libdbdoracle.la
+opt/syslog-ng/lib/dbd/libdbdoracle.s[o,l]
+opt/syslog-ng/lib/network/admin/sqlnet.ora
