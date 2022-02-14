@@ -1,0 +1,34 @@
+source="libdbi-drivers"
+version=0.8.2-pe-1
+dependencies=(
+  'libdbi0' 'libdbi0-dev'
+  'libpq' 'libpq-dev'
+  'libmysqlclient' 'libmysqlclient-dev'
+  'libsqlite3' 'libsqlite3-dev'
+  'oracle-libs' 'oracle-libs-dev'
+  'libct3' 'libsybdb5' 'freetds-dev'
+  'libsqlite3' 'libsqlite3-dev'
+  'libiconv' 'libiconv-dev'
+  'libssl' 'libssl-dev'
+  'zlib' 'zlib-dev'
+)
+
+bootstrap() {
+  ./autogen.sh
+}
+
+build() {
+  cd "${build_dir}"
+  ${src_dir}/configure --prefix="${prefix}" --disable-docs --without-oracle \
+    --with-dbi-incdir="${prefix}/include" --with-dbi-libdir="${prefix}/lib" \
+    --with-freetds --with-freetds-incdir="${prefix}/include" --with-freetds-libdir="${prefix}/lib" \
+    --with-mysql --enable-mysql-threadsafe --with-mysql-libdir="${prefix}/lib" --with-mysql-incdir="${prefix}/include" \
+    --with-pgsql --with-pgsql-libdir="${prefix}/lib" --with-pgsql-incdir="${prefix}/include" \
+    --with-sqlite3 --with-sqlite3-libdir="${prefix}/lib" --with-sqlite3-incdir="${prefix}/include" \
+    --with-oracle --with-oracle-libdir="${prefix}/lib" --with-oracle-incdir="${prefix}/include"
+  make
+}
+
+install() {
+  make -C "${build_dir}" DESTDIR="${dest_dir}" install
+}
