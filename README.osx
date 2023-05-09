@@ -9,47 +9,54 @@ http://libdbi-drivers.sourceforge.net
 OS X-SPECIFIC INSTALLATION INSTRUCTIONS:
 ----------------------------------------
 
-(Tested on 10.4.9/PowerPC)
+(Tested on 13.3.1/ARM, 12.6.4/Intel)
+
+Assuming you are using homebrew (for other package managers please adjust/define your corrseponding HOMEBREW_PREFIX)
+
+	if [[ "$CPUTYPE" = "arm64" ]]; then
+		export HOMEBREW_PREFIX=/opt/homebrew
+	else
+		export HOMEBREW_PREFIX=/usr/local
+	fi
+	export PATH=${HOMEBREW_PREFIX}/bin:${HOMEBREW_PREFIX}/sbin:$PATH
+	export CFLAGS=-I${HOMEBREW_PREFIX}/include/
+	export LDFLAGS=-L${HOMEBREW_PREFIX}/lib
 
 	LIBTOOLIZE=glibtoolize ./autogen.sh
-	./configure --disable-docs --with-mysql --with-pgsql --with-sqlite --with-pgsql-dir=/opt/local/pgsql LDFLAGS="-L/sw/lib"
+	./configure --with-mysql --with-pgsql --with-pgsql-incdir=${HOMEBREW_PREFIX}/include --with-pgsql-libdir=${HOMEBREW_PREFIX}/lib --with-oracle --with-oracle-incdir=${HOMEBREW_PREFIX}/include --with-oracle-libdir=${HOMEBREW_PREFIX}/lib --with-sqlite3 --with-sqlite3-incdir=/${HOMEBREW_PREFIX}include --with-sqlite3-libdir=${HOMEBREW_PREFIX}/lib --with-dbi-incdir=${HOMEBREW_PREFIX}/include --with-dbi-libdir=${HOMEBREW_PREFIX}/lib  --prefix=${HOMEBREW_PREFIX}
 	make
 	sudo make install
 
-Adjust configure options and paths according to which databases you are
-using, and where their headers and libraries are installed.
+Adjust configure options and paths according to
+- where libdbi headers and libraries are installed.
+- which databases you are using, and where their headers and libraries are installed.
+
+If openjade is not available, add '--disable-docs' to configure's options.
 
 
-QUICKSTART - MYSQL
+QUICKSTART FOR NATIVE DRIVER DEPENDENCIES
 ------------------
-If you are using the MySQL.com Community[1] or Enterprise[2] package,
-or a source install in the default location:
 
-	sudo ln -s /usr/local/mysql/include /usr/include/mysql
-	./configure --with-mysql --with-mysql-dir=/usr/local/mysql --disable-docs
-	make
-	sudo make install
+**SQLite3** - Presented by default, if not
+`brew install sqlite3`
 
-[1] http://dev.mysql.com/downloads/
-[2] https://enterprise.mysql.com/software/enterprise.php
+**PostgresSQL**
+`brew install postgresql`
 
+**MySQL**
+`brew install mysql`
 
-QUICKSTART - POSTGRESQL
------------------------
-There are several options for installing PostgreSQL on OS X, including:
-- Marc Liyanage's package at http://www.entropy.ch/software/macosx/postgresql/
-- Druware's package at http://postgresqlformac.com/
-- Fink package manager, see http://developer.apple.com/internet/opensource/postgres.html
+**ORACLE** - You will need OCCI  (Oracle Instant Client)
+- ARM
+Please NOTE, there is NO ARM OCCI unfortunatley currently :S
+- X86
+https://www.oracle.com/database/technologies/instant-client/macos-intel-x86-downloads.html
 
-If using the entropy.ch package, configure libdbi-drivers as follows:
-	./configure --with-pgsql --with-pgsql-dir=/usr/local/pgsql --disable-docs
-
-If using the postgresqlformac.com package,
-	./configure --with-pgsql --with-pgsql-dir=/Library/PostgreSQL8 --disable-docs
-
-In all cases, build and install libdbi-drivers as follows:
-	make
-	sudo make install
+For testing
+- parallel
+`brew install parallel`
+- dbcli
+https://www.dbcli.com/
 
 
 MODIFICATIONS AND REDISTRIBUTION (GPL):
