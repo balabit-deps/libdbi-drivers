@@ -68,7 +68,8 @@ if test "$ac_dbi_incdir" = "no"; then
 else
 	DBI_INCLUDE=-I$ac_dbi_incdir
 fi
-	
+
+AC_MSG_RESULT([yes: includes in $ac_dbi_incdir])
 AC_SUBST(DBI_INCLUDE)
 ])
 
@@ -134,7 +135,7 @@ if test "$ac_mysql" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_MYSQL, true)
-	
+
 	AC_SUBST(MYSQL_LIBS)
 	AC_SUBST(MYSQL_INCLUDE)
 	AC_MSG_CHECKING(for MySQL includes)
@@ -187,7 +188,7 @@ if test "$ac_pgsql" = "yes"; then
 		PGSQL_INCLUDE=-I$ac_pgsql_incdir
 	fi
 	if test "$ac_pgsql_libdir" = "no"; then
-		PGSQL_LDFLAGS=`pg_config --libdir`
+		PGSQL_LDFLAGS="-L"`pg_config --libdir`
 	else
 		PGSQL_LDFLAGS=-L$ac_pgsql_libdir
 	fi
@@ -196,7 +197,7 @@ if test "$ac_pgsql" = "yes"; then
 
 
 	AM_CONDITIONAL(HAVE_PGSQL, true)
-	
+
 	AC_SUBST(PGSQL_LIBS)
 	AC_SUBST(PGSQL_INCLUDE)
 	AC_MSG_CHECKING(for PostgreSQL includes)
@@ -252,7 +253,7 @@ if test "$ac_sqlite" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_SQLITE, true)
-	
+
 	AC_SUBST(SQLITE_LIBS)
 	AC_SUBST(SQLITE_INCLUDE)
 	AC_SUBST(SQLITE_LDFLAGS)
@@ -304,7 +305,7 @@ if test "$ac_sqlite3" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_SQLITE3, true)
-	
+
 	AC_SUBST(SQLITE3_LIBS)
 	AC_SUBST(SQLITE3_INCLUDE)
 	AC_SUBST(SQLITE3_LDFLAGS)
@@ -357,7 +358,7 @@ if test "$ac_msql" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_MSQL, true)
-	
+
 	AC_SUBST(MSQL_LIBS)
 	AC_SUBST(MSQL_INCLUDE)
 	AC_SUBST(MSQL_LDFLAGS)
@@ -414,11 +415,11 @@ if test "$ac_oracle" = "yes"; then
 	fi
 	AC_MSG_RESULT([yes: libs in $ac_oracle_libdir, headers in $ac_oracle_incdir])
 	AM_CONDITIONAL(HAVE_ORACLE, true)
-	
+
 	ORACLE_LIBS=-lclntsh
 	ORACLE_INCLUDE="-I$ac_oracle_incdir -I$ORACLE_HOME/rdbms/public"
 	ORACLE_LDFLAGS=-L$ac_oracle_libdir
-	
+
 	AC_SUBST(ORACLE_LIBS)
 	AC_SUBST(ORACLE_INCLUDE)
 	AC_SUBST(ORACLE_LDFLAGS)
@@ -470,7 +471,7 @@ if test "$ac_firebird" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_FIREBIRD_INTERBASE, true)
-	
+
 	AC_SUBST(FIREBIRD_LIBS)
 	AC_SUBST(FIREBIRD_INCLUDE)
 	AC_SUBST(FIREBIRD_LDFLAGS)
@@ -523,7 +524,7 @@ if test "$ac_freetds" = "yes"; then
 	fi
 
 	AM_CONDITIONAL(HAVE_FREETDS, true)
-	
+
 	AC_SUBST(FREETDS_LIBS)
 	AC_SUBST(FREETDS_INCLUDE)
 	AC_SUBST(FREETDS_LDFLAGS)
@@ -580,11 +581,11 @@ if test "$ac_ingres" = "yes"; then
 	fi
 	AC_MSG_RESULT([yes: libs in $ac_ingres_libdir, headers in $ac_ingres_incdir])
 	AM_CONDITIONAL(HAVE_INGRES, true)
-	
+
 	INGRES_LIBS="-lingres -lpthread -ldl -lm -lcrypt"
 	INGRES_INCLUDE=-I$ac_ingres_incdir
 	INGRES_LDFLAGS=-L$ac_ingres_libdir
-	
+
 	AC_SUBST(INGRES_LIBS)
 	AC_SUBST(INGRES_INCLUDE)
 	AC_SUBST(INGRES_LDFLAGS)

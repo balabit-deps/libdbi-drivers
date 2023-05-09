@@ -38,3 +38,17 @@ sbuild/*
 !sbuild/config.yml
 sbuild.py
 test-driver
+*.Plo
+drivers/mysql/.libs
+.libs
+*.lo
+*.o
+*.la
+*.Po
+config.h
+config.log
+config.status
+libdbi.spec
+libtool
+stamp-h1
+test-driver
